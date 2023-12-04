@@ -18,6 +18,22 @@
 
 
 
+# 如何运行：
+
+
+
+首次运行需要进行API设置，
+
+[水龙头API]: https://faucet.openkey.cloud/	"水龙头API"
+
+，可以使用这个免费API，将获得的key填入，接口设置为 `https://openkey.cloud/v1/chat/completions`
+
+
+
+
+
+
+
 **项目展示：**
 
 ![img](https://raw.githubusercontent.com/wangshao2003/resourse/main/main.png)
