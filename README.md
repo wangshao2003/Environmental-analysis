@@ -22,11 +22,11 @@
 
 
 
-首次运行需要进行API设置，
+首次运行需要进行API设置，可以使用免费API，[水龙头API](https://faucet.openkey.cloud/)
 
-[水龙头API]: https://faucet.openkey.cloud/	"水龙头API"
+ 将获得的密钥填入KEY
 
-，可以使用这个免费API，将获得的key填入，接口设置为 `https://openkey.cloud/v1/chat/completions`
+API接口设置为： `https://openkey.cloud/v1/chat/completions`
 
 
 
