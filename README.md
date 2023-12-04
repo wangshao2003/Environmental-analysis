@@ -20,10 +20,13 @@
 
 **项目展示：**
 
-![QQ截图20231204123520](.\READMEimgs\QQ截图20231204123520.png)
+![img](https://raw.githubusercontent.com/wangshao2003/resourse/main/main.png)
 
 
 
 
 
-![API设置](.\READMEimgs\API设置.png)
+![API设置.png](https://github.com/wangshao2003/resourse/blob/main/API%E8%AE%BE%E7%BD%AE.png?raw=true)
+
+
+
