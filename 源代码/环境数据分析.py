@@ -2,6 +2,10 @@ import tkinter as tk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 import requests
+import matplotlib.pyplot as plt
+from PIL import Image, ImageTk
+
+
 
 # 省份和城市的数据，可以根据需要添加或修改
 province_cities = {
@@ -50,7 +54,10 @@ def on_city_select(selected_city):
 
 #调用和风天气API获取实时空气质量
 def weatherapi():
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体为SimHei或你系统中存在的合适字体
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
     api_key = "6ae348c85af540c79479f9e5d4f8e130"  # 和风天气 API 密钥
+    global city
     city = city_combobox.get()                                         # 查询天气的城市
     #城市LocationID搜索
     global locationid, aircondition
@@ -81,10 +88,13 @@ def weatherapi():
     else:
         weather_text.delete(1.0, tk.END)  # 清空结果框
         weather_text.insert(tk.END, "和风API调用失败，请检查您的网络连接和API密钥是否正确。")
+
     return aircondition
 
 #将空气质量传入chatgptAPI
 def chatgptapi():
+    weather_text.configure(state="normal")
+    jianyi_text.configure(state="normal")
     try:
         with open("API.txt", "r") as file:
             lines = file.readlines()
@@ -137,24 +147,25 @@ def chatgptapi():
     jianyi_text.configure(state="disabled")
 
 
-def open_new_window():
-    new_window = tk.Toplevel(root)
-    new_window.title("API设置")
+def open_api_window():
+    api_window = tk.Toplevel(root)
+    api_window.title("API设置")
+    api_window.iconbitmap("./icon.ico")
     # 获取屏幕尺寸和窗口尺寸
-    new_window_width = 450
-    new_window_height = 180
+    api_window_width = 450
+    api_window_height = 180
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
     # 计算窗口居中时左上角的坐标
-    x = (screen_width - new_window_width) // 2
-    y = (screen_height - new_window_height) // 2
+    x = (screen_width - api_window_width) // 2
+    y = (screen_height - api_window_height) // 2
 
     # 设置窗口尺寸和放置位置
-    new_window.geometry(f'{new_window_width}x{new_window_height}+{x}+{y}')
+    api_window.geometry(f'{api_window_width}x{api_window_height}+{x}+{y}')
 
-    entry1 = tk.Entry(new_window, width=new_window_width)
-    entry2 = tk.Entry(new_window, width=new_window_width)
+    entry1 = tk.Entry(api_window, width=api_window_width)
+    entry2 = tk.Entry(api_window, width=api_window_width)
 
     # 尝试从文件中读取内容
     try:
@@ -171,27 +182,85 @@ def open_new_window():
         with open("API.txt", "w") as file:
             file.write(entry1.get() + "\n")
             file.write(entry2.get() + "\n")
-        new_window.destroy()
+        api_window.destroy()
 
     # 布局输入框和保存按钮
-    jiekou = tk.Label(new_window, text="API接口:")
+    jiekou = tk.Label(api_window, text="API接口:")
     jiekou.pack()
 
     entry1.pack()
 
-    space = tk.Label(new_window, text="")
+    space = tk.Label(api_window, text="")
     space.pack()
 
-    key = tk.Label(new_window, text="KEY:")
+    key = tk.Label(api_window, text="KEY:")
     key.pack()
 
     entry2.pack()
 
-    space1 = tk.Label(new_window, text="")
+    space1 = tk.Label(api_window, text="")
     space1.pack()
 
-    save_button = tk.Button(new_window, text="保存", command=save_and_close)
+    save_button = tk.Button(api_window, text="保存", command=save_and_close)
     save_button.pack()
+
+def show_line_chart():
+    # 创建新的窗口
+    chart_window = tk.Toplevel(root)
+    chart_window.title("五天空气质量预报折线图")
+    chart_window.iconbitmap("./icon.ico")
+
+
+    # 生成折线图
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体为SimHei或你系统中存在的合适字体
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+    # 获取折线图尺寸
+    image = Image.open(f'{city}五天空气质量预报.png')
+    width, height = image.size
+
+    # 设置新窗口大小，稍大于折线图的尺寸
+    chart_window.geometry(f"{width + 20}x{height + 20}")  # 20像素的额外空间
+
+    # 获取空气质量数据
+
+    hefeng_forecast_url = "https://devapi.qweather.com/v7/air/5d"  # 获取五天空气质量预报的API
+    api_key = "6ae348c85af540c79479f9e5d4f8e130"  # 和风天气 API 密钥
+    hefeng_forecast_params = {
+        "location": locationid,
+        "key": api_key,
+    }
+
+    forecast_response = requests.get(hefeng_forecast_url, params=hefeng_forecast_params)
+    if forecast_response.status_code == 200:
+        forecast_data = forecast_response.json()
+        air_quality_forecast = forecast_data['daily']
+
+        # 提取日期和空气质量指数
+        dates = [day['fxDate'] for day in air_quality_forecast]
+        air_quality_index = [day['aqi'] for day in air_quality_forecast]
+
+        # 绘制折线图
+        plt.figure(figsize=(8, 5))
+        plt.plot(dates, air_quality_index, marker='o', linestyle='-', color='b')
+        plt.title(f'{city}五天空气质量预报')
+        plt.xlabel('日期')
+        plt.ylabel('空气质量指数')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+
+        # 保存折线图为图片文件
+        plt.savefig(f'{city}五天空气质量预报.png')
+        plt.close()
+
+        # 打开并显示折线图
+        image = Image.open(f'{city}五天空气质量预报.png')
+        image = ImageTk.PhotoImage(image)
+
+        # 在新窗口中显示折线图到Label部件
+        image_label = tk.Label(chart_window, image=image)
+        image_label.image = image
+        image_label.pack()
 
 
 # 创建主窗口
@@ -205,7 +274,7 @@ root.iconbitmap("./icon.ico")
 
 # 创建选项菜单
 menubar = tk.Menu(root)
-menubar.add_command(label="API设置", command=open_new_window)
+menubar.add_command(label="API设置", command=open_api_window)
 root.config(menu=menubar)
 
 
@@ -238,7 +307,12 @@ space2.pack()
 custom_padding = (80, 20, 80, 20)
 button = ttk.Button(root, text="查询", command=chatgptapi, bootstyle=SUCCESS, padding=custom_padding)
 button.size = (10,100)
-button.pack()
+button.pack(padx=10, pady=10)
+
+custom_padding = (80, 20, 80, 20)
+button = ttk.Button(root, text="查看折线图", command=show_line_chart, padding=custom_padding)
+button.size = (10,100)
+button.pack(padx=10, pady=10)
 
 
 space3 = tk.Label(root, text="")
@@ -264,7 +338,7 @@ jianyi_text.pack()
 
 # 获取屏幕尺寸和窗口尺寸
 window_width = 450
-window_height = 650
+window_height = 800
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
