@@ -211,17 +211,6 @@ def show_line_chart():
     chart_window.iconbitmap("./icon.ico")
 
 
-    # 生成折线图
-    plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体为SimHei或你系统中存在的合适字体
-    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
-
-    # 获取折线图尺寸
-    image = Image.open(f'{city}五天空气质量预报.png')
-    width, height = image.size
-
-    # 设置新窗口大小，稍大于折线图的尺寸
-    chart_window.geometry(f"{width + 20}x{height + 20}")  # 20像素的额外空间
-
     # 获取空气质量数据
 
     hefeng_forecast_url = "https://devapi.qweather.com/v7/air/5d"  # 获取五天空气质量预报的API
@@ -249,18 +238,32 @@ def show_line_chart():
         plt.xticks(rotation=45)
         plt.tight_layout()
 
+        image_file = f"{city}五天空气质量预报.png"
         # 保存折线图为图片文件
-        plt.savefig(f'{city}五天空气质量预报.png')
+        plt.savefig(image_file)
         plt.close()
 
         # 打开并显示折线图
-        image = Image.open(f'{city}五天空气质量预报.png')
+        image = Image.open(image_file)
         image = ImageTk.PhotoImage(image)
 
         # 在新窗口中显示折线图到Label部件
         image_label = tk.Label(chart_window, image=image)
         image_label.image = image
         image_label.pack()
+
+        # 生成折线图
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置中文字体为SimHei或你系统中存在的合适字体
+        plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+        # 获取折线图尺寸
+        image = Image.open(image_file)
+        width, height = image.size
+
+        # 设置新窗口大小，稍大于折线图的尺寸
+        chart_window.geometry(f"{width + 20}x{height + 20}")  # 20像素的额外空间
+
+
 
 
 # 创建主窗口

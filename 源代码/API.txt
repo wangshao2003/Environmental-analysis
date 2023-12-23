@@ -1,2 +1,0 @@
-https://openkey.cloud/v1/chat/completions
-sk-jATXkWapJTgKERJdr39LdvEnOpSyazSGeBRYxxxxxxxxxxx

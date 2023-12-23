@@ -44,6 +44,8 @@ API接口设置为： `https://openkey.cloud/v1/chat/completions`
 
 ![API设置.png](https://github.com/wangshao2003/resourse/blob/main/API%E8%AE%BE%E7%BD%AE.png?raw=true)
 
+![](https://raw.githubusercontent.com/wangshao2003/resourse/main/%E6%99%8B%E7%BA%A7%E8%B5%9B.png)
+
 
 
 
